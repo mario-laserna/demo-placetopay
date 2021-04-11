@@ -34,3 +34,10 @@ Estos valores se incluyen en el archivoi .env.example como referencia
 
 También deberá configurar los valores de conexión a la base de datos en el archivo .env
 
+### Test unitarios
+
+Se agregaron test para validar que las reglas del request de ordenes funcionan correctamente y que hay 3 productos
+en la base de datos, esto para verificar que se haya ejecutado el seed correctamente
+
+Ejecute los tests así `php artisan test`
+
