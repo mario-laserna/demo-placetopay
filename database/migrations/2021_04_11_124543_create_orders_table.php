@@ -22,6 +22,9 @@ class CreateOrdersTable extends Migration
             $table->integer('quantity');
             $table->unsignedBigInteger('product_id');
             $table->double('total_order');
+            $table->string('request_id')->nullable();
+            $table->string('request_url')->nullable();
+            $table->string('request_error')->nullable();
             $table->string('status', 20)->default(Order::STATUS_CREATED);
             $table->timestamps();
 

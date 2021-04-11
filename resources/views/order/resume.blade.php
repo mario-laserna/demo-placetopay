@@ -10,16 +10,22 @@
                     <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">Datos cliente: {{ $order->customer_name }} - {{ $order->customer_email }} - {{ $order->customer_mobile }}</span>
                     <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">Cantidad: {{ $order->quantity }}</span>
                     <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">Total: {{ number_format($order->total_order) }}</span>
+                    @if(!$order->request_id)
                     <a class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
-                       href="{{ route('order.create', ['product' => $product->id]) }}">
+                       href="{{ route('order.sendtopay', ['order' => $order->id]) }}">
                         Pagar
                     </a>
+                    @endif
+
+                    @if($order->request_id)
+                        <p>PlacetoPay ID : {{ $order->request_id }}</p>
+                        <p>Estado transacción : {{ $order->status }}</p>
+                        @if($order->request_error)
+                            <p>ERROR!! : {{ $order->request_error }}</p>
+                        @endif
+                    @endif
                 </div>
             </div>
-
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
-
 
         <br>
         <br>

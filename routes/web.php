@@ -21,6 +21,8 @@ Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/order/create/{product}', [OrderController::class, 'create'])->name('order.create');
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
 Route::get('/order/resume/{order}', [OrderController::class, 'resume'])->name('order.resume');
+Route::get('/order/callback/{order}', [OrderController::class, 'callback'])->name('order.callback');
+Route::get('/order/send/{order}', [OrderController::class, 'sendToPay'])->name('order.sendtopay');
 
 
 /** Rutas del sitio admin */
