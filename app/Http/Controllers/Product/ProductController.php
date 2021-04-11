@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product\Product;
-use Illuminate\Http\Request;
+use App\Services\ProductService;
 
 class ProductController extends Controller
 {
+    private $productService;
+
+    public function __construct(ProductService $ps){
+        $this->productService = $ps;
+    }
+
     public function index() {
-        $products = Product::all();
+        $products = $this->productService->all();
 
         return view('welcome')->with([
             'products' => $products
