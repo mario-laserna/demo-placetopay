@@ -45,6 +45,9 @@ class OrderController extends Controller
     }
 
     public function resume(Order $order){
-        dd($order);
+        return view('order.resume')->with([
+            'product' => $order->product,
+            'order' => $order
+        ]);
     }
 }
