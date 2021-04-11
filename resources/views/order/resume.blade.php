@@ -15,13 +15,20 @@
                        href="{{ route('order.sendtopay', ['order' => $order->id]) }}">
                         Pagar
                     </a>
+                    @else
+                        <a class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+                           href="{{ route('order.create', ['product' => $product->id]) }}">
+                            Reintentar comprar
+                        </a>
                     @endif
 
+                    <br>
+                    <br>
                     @if($order->request_id)
-                        <p>PlacetoPay ID : {{ $order->request_id }}</p>
-                        <p>Estado transacción : {{ $order->status }}</p>
+                        <p><b>PlacetoPay ID</b> : {{ $order->request_id }}</p>
+                        <p><b>Estado transacción</b> : {{ $order->status }}</p>
                         @if($order->request_error)
-                            <p>ERROR!! : {{ $order->request_error }}</p>
+                            <p style="color: red;">ERROR!! : {{ $order->request_error }}</p>
                         @endif
                     @endif
                 </div>
