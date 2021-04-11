@@ -13,6 +13,11 @@ class ProductController extends Controller
         $this->productService = $ps;
     }
 
+    /**
+     * Permite mostrar el listado de productos disponibles
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function index() {
         $products = $this->productService->all();
 

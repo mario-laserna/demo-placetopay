@@ -8,8 +8,6 @@ use App\Models\Order\Order;
 use App\Models\Product\Product;
 use App\Services\PaymentService;
 use App\Services\ProductService;
-use Dnetix\Redirection\PlacetoPay;
-use Illuminate\Support\Facades\Request;
 
 class OrderController extends Controller
 {
@@ -33,6 +31,13 @@ class OrderController extends Controller
         ]);
     }
 
+    /**
+     * Recibe los datos del formulario ya validados por el request y crea una nueva orden
+     * en la base de datos
+     *
+     * @param OrderRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(OrderRequest $request){
         $product = $this->productService->id($request->get('product_id'));
 
@@ -49,6 +54,12 @@ class OrderController extends Controller
         return redirect()->route('order.resume', ['order' => $order->id]);
     }
 
+    /**
+     * A partir de la orden que llega como parametro muestra pantalla de resumen de la orden
+     *
+     * @param Order $order
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function resume(Order $order){
         return view('order.resume')->with([
             'product' => $order->product,
@@ -56,27 +67,33 @@ class OrderController extends Controller
         ]);
     }
 
+    /**
+     * Pantalla a la que llegan los usuarios cuando son redirigidos de la pasarela de pagos
+     *
+     * Valida el estado de la transacción y muestra resumen
+     *
+     * @param Order $order
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function callback(Order $order){
         if($order->request_id){
             $placetopay = $this->paymentService->createPlacetopayObject();
             $response = $placetopay->query($order->request_id);
 
-            //dd($response);
-            //dd($response->isSuccessful());
             if ($response->isSuccessful()) {
                 if ($response->status()->isApproved()) {
-                    // The payment has been approved
+                    // Pago aprobado
                     $order->request_error = '';
                     $order->status = Order::STATUS_PAYED;
                     $order->save();
                 }else{
+                    // Pago rechazado
                     $order->request_error = $response->status()->message();
                     $order->status = Order::STATUS_REJECTED;
                     $order->save();
                 }
             } else {
-                // There was some error with the connection so check the message
-                //dd($response->status()->message());
+                // Error en la transacción, se guarda detalle
                 $order->request_error = $response->status()->message();
                 $order->status = Order::STATUS_REJECTED;
                 $order->save();
@@ -91,33 +108,21 @@ class OrderController extends Controller
         ]);
     }
 
+    /**
+     * A partir de la orden ya creada, define la comunicación con Placetopay, obtiene url dinámica y redirige al usuario
+     * a esta url para que continúe le proceso de pago en Placetopay
+     *
+     * @param Order $order
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Dnetix\Redirection\Exceptions\PlacetoPayException
+     */
     public function sendToPay(Order $order){
+        //obtiene objeto de placetopay (datos de autenticación) y el request que se envía
         $placetopay = $this->paymentService->createPlacetopayObject();
-
-        $reference = $order->id;
-        $request = [
-            'payment' => [
-                'reference' => $reference,
-                'description' => 'Compra ' . $order->product->name . ' (Cantidad: '. $order->quantity .')',
-                'amount' => [
-                    'currency' => 'COP',
-                    'total' => $order->total_order,
-                ],
-            ],
-            'expiration' => date('c', strtotime('+2 days')),
-            'returnUrl' => config('placetopay.url_return') . $reference,
-            'ipAddress' => '127.0.0.1',
-            'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36',
-        ];
+        $request = $this->paymentService->createRequestPlacetopay($order);
 
         $response = $placetopay->request($request);
-        //dd($response);
         if ($response->isSuccessful()) {
-            // STORE THE $response->requestId() and $response->processUrl() on your DB associated with the payment order
-            // Redirect the client to the processUrl or display it on the JS extension
-
-            //header('Location: ' . $response->processUrl());
-
             /**
              * Se guardan detalles de la transaccion, id de la solicitud y url generada
              */
@@ -128,8 +133,9 @@ class OrderController extends Controller
             //Redirige para continuar pago
             return redirect($response->processUrl());
         } else {
-            // There was some error so check the message and log it
-
+            /**
+             * Error en la transacción, se guarda detalle
+             */
             $order->request_error = $response->status()->message();
             $order->save();
 
