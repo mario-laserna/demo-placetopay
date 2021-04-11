@@ -21,6 +21,8 @@ class Order extends Model
         'quantity',
         'total_order',
         'product_id',
+        'request_id',
+        'request_url',
         'status'
     ];
 
