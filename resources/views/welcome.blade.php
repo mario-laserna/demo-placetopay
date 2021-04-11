@@ -11,13 +11,14 @@
             </div>
             <div class="px-6 py-4">
                 <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">$ {{ number_format($product->price) }}</span>
-                <button class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
-                    Buy!!
-                </button>
+                <a class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+                    href="{{ route('order.create', ['product' => $product->id]) }}">
+                    Comprar!!
+                </a>
             </div>
         </div>
         @empty
-            There are not products to show
+            No hay productos para mostrar
         @endforelse
     </div>
 </x-guest-layout>

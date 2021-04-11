@@ -15,10 +15,10 @@ class User extends Authenticatable
     const TYPE_CLIENT = 'client';
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+ * The attributes that are mass assignable.
+ *
+ * @var array
+ */
     protected $fillable = [
         'name',
         'email',

@@ -9,21 +9,38 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    You're logged in!
 
-                    <div class="max-w-xs rounded overflow-hidden shadow-lg my-2">
-                        <img class="w-full" src="https://tailwindcss.com/img/card-top.jpg" alt="Sunset in the mountains">
-                        <div class="px-6 py-4">
-                            <div class="font-bold text-xl mb-2">The Coldest Sunset</div>
-                            <p class="text-grey-darker text-base">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.
-                            </p>
-                        </div>
-                        <div class="px-6 py-4">
-                            <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#photography</span>
-                            <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#travel</span>
-                            <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker">#winter</span>
-                        </div>
+                    <table class="table-auto border-solid">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Total Orden</th>
+                            <th>Status</th>
+                            <th>Created at</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($orders as $order)
+                            <tr>
+                                <td class="border border-solid">{{ $order->customer_name }}</td>
+                                <td class="border border-solid">{{ $order->customer_email }}</td>
+                                <td class="border border-solid">{{ $order->customer_mobile }}</td>
+                                <td class="border border-solid">{{ $order->product->name }}</td>
+                                <td class="border border-solid">{{ $order->quantity }}</td>
+                                <td class="border border-solid">${{ number_format($order->total_order) }}</td>
+                                <td class="border border-solid">{{ $order->status }}</td>
+                                <td class="border border-solid">{{ $order->created_at }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+
+                    <div class="p-6 bg-white border-b border-gray-200">
+                        {{ $orders->links() }}
                     </div>
                 </div>
             </div>
